@@ -1,0 +1,10 @@
+
+[versions]
+kotlin = "2.4.20"
+snakeyaml-engine = "3.1.1"
+
+[libraries]
+snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyaml-engine" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
