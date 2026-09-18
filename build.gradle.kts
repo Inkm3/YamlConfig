@@ -1,3 +1,9 @@
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.api.tasks.testing.Test
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
@@ -11,9 +17,15 @@ plugins {
 group = providers.gradleProperty("projectGroup").get()
 version = providers.gradleProperty("projectVersion").get()
 
+val publishedProjects = setOf("core", "snakeyaml")
+
 subprojects {
     group = rootProject.group
     version = rootProject.version
+
+    if (name in publishedProjects) {
+        apply(plugin = "maven-publish")
+    }
 
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         extensions.configure<KotlinJvmExtension> {
@@ -35,6 +47,14 @@ subprojects {
             }
 
             withSourcesJar()
+        }
+
+        extensions.configure<PublishingExtension> {
+            publications {
+                create<MavenPublication>("maven") {
+                    from(components["java"])
+                }
+            }
         }
 
         tasks.withType<JavaCompile>().configureEach {
