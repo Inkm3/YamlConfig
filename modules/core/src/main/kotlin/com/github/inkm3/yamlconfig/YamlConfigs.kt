@@ -7,7 +7,16 @@ import com.github.inkm3.yamlconfig.source.YamlMissingFilePolicy
 import com.github.inkm3.yamlconfig.source.YamlSource
 import com.github.inkm3.yamlconfig.spi.YamlEngine
 
-public fun <T> yamlConfig(
+/**
+ * Creates a YAML configuration.
+ *
+ * When [missingFilePolicy] is not specified:
+ *
+ * - [YamlMissingFilePolicy.COPY_DEFAULTS] is used when [defaultsSource]
+ *   is configured.
+ * - [YamlMissingFilePolicy.DO_NOT_CREATE] is used otherwise.
+ */
+public fun <T: Any> yamlConfig(
     engine: YamlEngine,
     userSource: YamlSource,
     schema: YamlSchema<T>,

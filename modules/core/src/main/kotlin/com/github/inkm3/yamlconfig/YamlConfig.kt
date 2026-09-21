@@ -10,7 +10,7 @@ import com.github.inkm3.yamlconfig.source.YamlSource
 import com.github.inkm3.yamlconfig.source.internal.YamlMissingFileHandler
 import com.github.inkm3.yamlconfig.spi.YamlEngine
 
-public class YamlConfig<T> public constructor(
+public class YamlConfig<T: Any> internal constructor(
     private val engine: YamlEngine,
     private val userSource: YamlSource,
     private val schema: YamlSchema<T>,
