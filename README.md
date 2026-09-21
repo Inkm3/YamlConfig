@@ -97,6 +97,8 @@ enabled: true
 description: null
 ```
 
+詳しい使い方は [docs/usage.md](docs/usage.md) を参照してください。
+
 ## List / Map
 
 ```kotlin
