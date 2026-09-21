@@ -1,9 +1,9 @@
 package com.github.inkm3.yamlconfig.save
 
-import com.github.inkm3.yamlconfig.YamlConfig
 import com.github.inkm3.yamlconfig.schema.int
 import com.github.inkm3.yamlconfig.schema.yamlObject
 import com.github.inkm3.yamlconfig.testsupport.*
+import com.github.inkm3.yamlconfig.yamlConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -15,7 +15,7 @@ class YamlConfigSessionTest {
 
     @Test fun successfulSaveUpdatesBaselineSoSecondSaveIsNoOp() {
         val source = TestYamlSource(stringMappingOf("value" to i(1)))
-        val session = YamlConfig(TestYamlEngine(), source, schema).load()
+        val session = yamlConfig(TestYamlEngine(), source, schema).load()
         session.value.value = 2
         session.save()
         source.lastOperations = emptyList()
@@ -26,7 +26,7 @@ class YamlConfigSessionTest {
     @Test fun failedWriteDoesNotAcceptWorkingEditorOrBaseline() {
         val source = TestYamlSource(stringMappingOf("value" to i(1)))
         val engine = TestYamlEngine()
-        val session = YamlConfig(engine, source, schema).load()
+        val session = yamlConfig(engine, source, schema).load()
         session.value.value = 2
         engine.failNextWrite = true
         assertFails { session.save() }

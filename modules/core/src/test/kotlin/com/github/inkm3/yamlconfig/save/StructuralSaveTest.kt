@@ -1,12 +1,12 @@
 package com.github.inkm3.yamlconfig.save
 
-import com.github.inkm3.yamlconfig.YamlConfig
 import com.github.inkm3.yamlconfig.node.YamlMapKey
 import com.github.inkm3.yamlconfig.node.YamlMappingNode
 import com.github.inkm3.yamlconfig.node.YamlScalarKind
 import com.github.inkm3.yamlconfig.node.YamlSequenceNode
 import com.github.inkm3.yamlconfig.schema.*
 import com.github.inkm3.yamlconfig.testsupport.*
+import com.github.inkm3.yamlconfig.yamlConfig
 import kotlin.test.*
 
 class StructuralSaveTest {
@@ -33,7 +33,7 @@ class StructuralSaveTest {
         ))
         val source = TestYamlSource(stringMappingOf("values" to userMap))
         val engine = TestYamlEngine()
-        val session = YamlConfig(engine, source, mapSchema).load()
+        val session = yamlConfig(engine, source, mapSchema).load()
 
         session.value.values = LinkedHashMap(session.value.values).apply {
             this[255] = "new"
@@ -55,7 +55,7 @@ class StructuralSaveTest {
         val source = TestYamlSource(stringMappingOf(
             "values" to sequenceOf(s("A"), s("B"), s("C")),
         ))
-        val session = YamlConfig(TestYamlEngine(), source, listSchema).load()
+        val session = yamlConfig(TestYamlEngine(), source, listSchema).load()
 
         session.value.values = listOf("C", "A", "X")
         session.save()
@@ -72,7 +72,7 @@ class StructuralSaveTest {
             "values" to sequenceOf(s("A"), s("B")),
         ))
         val user = TestYamlSource(stringMappingOf())
-        val session = YamlConfig(TestYamlEngine(), user, listSchema, defaults).load()
+        val session = yamlConfig(TestYamlEngine(), user, listSchema, defaults).load()
         session.value.values = listOf("A", "X")
         session.save()
 
@@ -90,7 +90,7 @@ class StructuralSaveTest {
         val user = TestYamlSource(stringMappingOf(
             "values" to sequenceOf(s("X")),
         ))
-        val session = YamlConfig(TestYamlEngine(), user, listSchema, defaults, YamlSaveMode.MINIMAL_DIFFERENCE).load()
+        val session = yamlConfig(TestYamlEngine(), user, listSchema, defaults, YamlSaveMode.MINIMAL_DIFFERENCE).load()
         session.value.values = listOf("A", "B")
         session.save()
 

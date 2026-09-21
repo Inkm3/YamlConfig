@@ -1,10 +1,10 @@
 package com.github.inkm3.yamlconfig.schema
 
-import com.github.inkm3.yamlconfig.YamlConfig
 import com.github.inkm3.yamlconfig.exception.YamlSchemaException
 import com.github.inkm3.yamlconfig.node.YamlMappingNode
 import com.github.inkm3.yamlconfig.path.YamlPath
 import com.github.inkm3.yamlconfig.testsupport.*
+import com.github.inkm3.yamlconfig.yamlConfig
 import kotlin.test.*
 
 class NullableAndObjectSchemaTest {
@@ -64,7 +64,7 @@ class NullableAndObjectSchemaTest {
             "port" to i(30000),
         ), "user")
 
-        val value = YamlConfig(engine, user, schema, defaults).load().value
+        val value = yamlConfig(engine, user, schema, defaults).load().value
         assertEquals("default-name", value.name)
         assertEquals(30000, value.port)
         assertEquals("factory-description", value.description)
@@ -81,7 +81,7 @@ class NullableAndObjectSchemaTest {
         ))
 
         assertFailsWith<YamlSchemaException> {
-            YamlConfig(engine, user, schema, defaults).load()
+            yamlConfig(engine, user, schema, defaults).load()
         }
     }
 
@@ -94,7 +94,7 @@ class NullableAndObjectSchemaTest {
         val user = TestYamlSource(stringMappingOf(
             "description" to n(),
         ))
-        val value = YamlConfig(TestYamlEngine(), user, schema, defaults).load().value
+        val value = yamlConfig(TestYamlEngine(), user, schema, defaults).load().value
         assertNull(value.description)
     }
 }
