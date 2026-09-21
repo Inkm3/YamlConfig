@@ -26,4 +26,8 @@ public class PathYamlSource public constructor(
     override fun beginWrite(): YamlWriteTransaction {
         return PathYamlWriteTransaction(path, charset)
     }
+
+    override fun exists(): Boolean {
+        return Files.exists(path)
+    }
 }
