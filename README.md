@@ -65,7 +65,7 @@ dependencies {
 例:
 
 ```kotlin
-implementation("com.github.Inkm3.YamlConfig:snakeyaml:v1.0.0")
+implementation("com.github.Inkm3.YamlConfig:snakeyaml:v1.1.0")
 ```
 
 ## 基本例
