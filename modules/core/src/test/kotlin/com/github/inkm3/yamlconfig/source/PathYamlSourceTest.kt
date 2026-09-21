@@ -7,6 +7,7 @@ import kotlin.io.path.writeText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class PathYamlSourceTest {
     @Test fun missingFileReadsAsEmptyWithoutCreatingFile() {
@@ -44,6 +45,24 @@ class PathYamlSourceTest {
             val source = PathYamlSource(path)
             source.beginWrite().use { tx -> tx.writer.write("new\n") }
             assertEquals("old\n", path.readText())
+        } finally {
+            dir.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun existsDistinguishesMissingAndExistingEmptyFile() {
+        val dir = Files.createTempDirectory("yamlconfig-core-test")
+
+        try {
+            val path = dir.resolve("config.yml")
+            val source = PathYamlSource(path)
+
+            assertFalse(source.exists())
+
+            path.writeText("")
+
+            assertTrue(source.exists())
         } finally {
             dir.toFile().deleteRecursively()
         }
