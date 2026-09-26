@@ -23,6 +23,13 @@ cache:
 verify:
   stage: verify
   image: eclipse-temurin:17-jdk
+
+  tags:
+    - docker
+    - linux
+    - build01
+    - java
+
   timeout: 15m
 
   script:
@@ -31,8 +38,10 @@ verify:
   artifacts:
     when: always
     expire_in: 1 week
+
     paths:
       - modules/*/build/reports/tests/test/
+
     reports:
       junit:
         - modules/*/build/test-results/test/TEST-*.xml
