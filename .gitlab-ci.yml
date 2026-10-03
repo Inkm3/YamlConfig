@@ -10,6 +10,7 @@ workflow:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_COMMIT_TAG'
     - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"'
       when: never
     - if: '$CI_COMMIT_BRANCH'
@@ -40,7 +41,12 @@ verify:
   timeout: 15m
   interruptible: true
   script:
-    - bash ./gradlew build --stacktrace --no-daemon -PtestJavaVersion=$TEST_JAVA_VERSION
+    - |
+      if [ "${FRESH_VERIFY:-false}" = "true" ]; then
+        bash ./gradlew build --stacktrace --no-daemon --rerun-tasks --no-build-cache -PtestJavaVersion=$TEST_JAVA_VERSION
+      else
+        bash ./gradlew build --stacktrace --no-daemon -PtestJavaVersion=$TEST_JAVA_VERSION
+      fi
   artifacts:
     when: always
     expire_in: 1 week
