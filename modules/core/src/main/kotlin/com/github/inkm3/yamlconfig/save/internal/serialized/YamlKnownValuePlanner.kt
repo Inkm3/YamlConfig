@@ -1,6 +1,7 @@
 package com.github.inkm3.yamlconfig.save.internal.serialized
 
 import com.github.inkm3.yamlconfig.node.YamlNode
+import com.github.inkm3.yamlconfig.save.internal.serialized.structure.YamlSourceAlignmentMemo
 import com.github.inkm3.yamlconfig.save.internal.serialized.structure.YamlStructuralValuePlanner
 import kotlinx.serialization.descriptors.SerialDescriptor
 
@@ -13,9 +14,10 @@ internal object YamlKnownValuePlanner {
         user: YamlNode?,
         force: Boolean = false,
         retainOmitted: Boolean = false,
+        alignment: YamlSourceAlignmentMemo = YamlSourceAlignmentMemo(),
     ): List<YamlValuePatch> {
         val edit = YamlStructuralValuePlanner.plan(descriptor, baseline, current, user, force,
-            root = true, retainOmitted = retainOmitted) ?: return emptyList()
+            root = true, retainOmitted = retainOmitted, alignment = alignment) ?: return emptyList()
         return listOf(YamlValuePatch.structural(edit))
     }
 

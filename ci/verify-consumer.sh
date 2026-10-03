@@ -12,6 +12,8 @@ for module in core snakeyaml; do
   test -n "$(find "$directory" -name '*.pom' -print -quit)"
   test -n "$(find "$directory" -name '*-sources.jar' -print -quit)"
 done
-bash ./gradlew -p samples/java-consumer clean run --stacktrace --no-daemon \
-  -PsmokeRepository="$root/build/smoke-repository" -PlibraryVersion="$version"
+for consumer in java-consumer kotlin-consumer; do
+  bash ./gradlew -p "samples/$consumer" clean run --stacktrace --no-daemon \
+    -PsmokeRepository="$root/build/smoke-repository" -PlibraryVersion="$version"
+done
 printf 'PUBLISHED_MODULES_OK: %s\n' "$version"

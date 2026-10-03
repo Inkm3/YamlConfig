@@ -1,60 +1,28 @@
 # YamlConfig
 
-Kotlin の `kotlinx.serialization` を使って YAML 設定を型付きで読み書きするライブラリです。
-
-`@Serializable` な設定クラスをそのまま利用でき、YAML defaults、差分保存、
-既存 YAML のコメント・クォート・キー表現などを可能な範囲で維持した編集を提供します。
-
-現在は開発中のため、API やパッケージ構成が変更される可能性があります。
-
-## 主な機能
-
-- `kotlinx.serialization` / `KSerializer<T>` ベースの型付き Config
-- immutable な `data class` と `val` を利用可能
-- constructor default / nullable / enum / `@SerialName`
-- List / Map / nested object
-- contextual / custom serializer
-- YAML defaults と user YAML の overlay
-- `PRESERVE_OVERRIDES` / `MINIMAL_DIFFERENCE`
-- List / Map の構造保存と Sequence identity
-- 既存コメント・クォート・scalar/key 表現を可能な範囲で保持
-- 保存候補の全体再検証と失敗時 rollback 境界
-- SnakeYAML Engine 実装
-
-## モジュール
-
-### `core`
-
-YAML Engine に依存しない Node、serialization codec、load/save、Editor SPI を含みます。
-
-### `snakeyaml`
-
-SnakeYAML Engine を利用した読み書きと presentation-preserving editing を提供します。
-通常はこちらを利用します。
+Kotlin/JVM・Javaから利用できる、kotlinx.serializationベースのYAML設定ライブラリです。
+型付きの読み書き、YAML defaults、差分保存、既存コメントや表記の保持を提供します。
+最低実行環境はJava 17です。
 
 ## 導入
 
-JitPack を利用します。
+JitPackを使用します。次は、所有者がGitHubをpublic化し、`v2.0.0`タグを公開・検証した後の依存指定です。
+バージョンのプロパティを変更しただけでは、JitPackにそのバージョンが公開されるわけではありません。
 
 ```kotlin
 repositories {
     maven("https://jitpack.io")
 }
-
 dependencies {
-    implementation("com.github.Inkm3.YamlConfig:snakeyaml:VERSION")
+    implementation("com.github.Inkm3.YamlConfig:snakeyaml:v2.0.0")
 }
 ```
 
-`core` のみ利用する場合:
+`core`はEngine非依存のNode・codec・load/save・Editor SPI、`snakeyaml`はSnakeYAML Engine実装です。
+通常は`snakeyaml`を使い、`core`は推移的依存として取得します。
+Kotlinモデルをコンパイルするプロジェクトには、Kotlinと同じバージョンのserialization compiler pluginを適用してください。
 
-```kotlin
-implementation("com.github.Inkm3.YamlConfig:core:VERSION")
-```
-
-利用側プロジェクトでは Kotlin serialization plugin も有効にしてください。
-
-## 基本例
+## Kotlin
 
 ```kotlin
 import com.github.inkm3.yamlconfig.snakeyaml.SnakeYamlEngine
@@ -65,103 +33,91 @@ import java.nio.file.Path
 
 @Serializable
 data class ServerConfig(
-    val name: String = "Server",
+    val name: String = "server",
     val port: Int = 25565,
-    val enabled: Boolean = true,
-    val description: String? = null,
 )
 
 val config = yamlConfig<ServerConfig>(
     engine = SnakeYamlEngine(),
     userSource = PathYamlSource(Path.of("config.yml")),
 )
-
 val session = config.load()
-
-println(session.value.port)
-
-session.value = session.value.copy(port = 25566)
+session.value = session.value.copy(port = 30000)
 session.save()
 ```
 
-`var` や mutable collection も利用できますが、immutable な値を `copy` で更新する方法を推奨します。
+`val`中心のimmutableモデルを使用できます。`var`やmutable collectionの変更も保存できます。
+同一sessionを複数threadから変更・保存する場合は外部同期が必要です。
 
-## YAML defaults
+## Java
 
-```kotlin
-import com.github.inkm3.yamlconfig.source.classpathYamlInput
+上のKotlinモデルがコンパイル済みなら、Javaでは生成されたcompanion serializerを渡します。
 
-val config = yamlConfig<ServerConfig>(
-    engine = SnakeYamlEngine(),
-    userSource = PathYamlSource(Path.of("config.yml")),
-    defaultsSource = classpathYamlInput<ServerConfig>("defaults.yml"),
-)
+```java
+import com.github.inkm3.yamlconfig.YamlConfigs;
+import com.github.inkm3.yamlconfig.snakeyaml.SnakeYamlEngine;
+import com.github.inkm3.yamlconfig.source.PathYamlSource;
+import java.nio.file.Path;
+
+var config = YamlConfigs.create(
+    new SnakeYamlEngine(),
+    new PathYamlSource(Path.of("config.yml")),
+    ServerConfig.Companion.serializer()
+);
+var session = config.load();
+session.setValue(new ServerConfig(session.getValue().getName(), 30000));
+session.save();
 ```
 
-値は概ね次の優先順位で決まります。
+任意設定は`YamlConfigs.builder(engine, source, serializer)`を使用します。
+Javaのrecord/POJOも明示的な`KSerializer`があれば利用できますが、自動reflection mappingは提供しません。
+Kotlin pluginなしのJava-only consumerと、生成serializerを使用するKotlin consumerを配布JARに対して検証しています。
 
-```text
-user YAML
-  ↓
-YAML defaults
-  ↓
-Kotlin constructor defaults
+## 読み込みと保存
+
+値の優先順位はuser YAML、YAML defaults、Kotlin constructor defaultsです。
+objectの既知プロパティは再帰的に統合し、List/Map/inline/opaque contextual値は全体overrideとして扱います。
+欠落と明示的な`null`、親のdefaultと明示的な空の子Mappingは区別します。
+
+標準の`PRESERVE_OVERRIDES`は既存overrideを維持し、無変更時は書き込みません。
+`MINIMAL_DIFFERENCE`は候補文書全体を再読み込みし、値を変えないoverrideだけを削除します。
+これはgreedyな削減であり、大域的な最小ファイルを保証するものではありません。
+
+保存は候補を検証し、forkしたEditorへ適用して実際のEditorも再検証し、write成功後だけsession状態を更新します。
+`@EncodeDefault(NEVER)`等で必要な値を取得できず、正しい保存候補を作れない場合は書き込み前に失敗します。
+
+## コメント・表記・identity
+
+既存Nodeとの対応を確認できるList/Map/objectは構造編集し、コメント・未知キー・quote・数値やキーの表記を可能な範囲で保持します。
+対応が不明なcustom serializer等では全体置換へ戻るため、すべての内部表記を保証するものではありません。
+
+List内objectは、最初の必須・非inline scalarフィールドをidentity候補にできます。
+変更前後で一意かつ非nullの場合に限りmoveと内部更新へ使います。必要なときだけ既存の`@YamlIdentity`／`@YamlIdentityDisabled`を使用します。
+今回のJava対応に新しい独自annotationは不要です。
+
+Anchor、Alias、Recursive Alias、Merge Key、Complex Mapping Keyは未対応です。
+引用符で囲んだ文字列キー`"<<"`はmerge keyとは区別します。
+
+## 検証
+
+```bash
+bash ./gradlew build
+bash ./gradlew build -PtestJavaVersion=21
+bash ./gradlew build -PtestJavaVersion=25
+bash ci/verify-consumer.sh
 ```
 
-object は既知 property 単位で overlay します。
-List / Map / inline / opaque contextual value は whole-value override です。
-missing と明示的 YAML `null` は区別します。
-
-## 保存モード
-
-標準は `YamlSaveMode.PRESERVE_OVERRIDES` です。
-
-`MINIMAL_DIFFERENCE` は、現在値を変えないことを文書全体で検証しながら
-不要な user override を greedily 削除します。大域的な最小 YAML を保証するものではありません。
-
-## Presentation
-
-SnakeYAML 実装では、変更していない既存 Node をできるだけ再利用します。
-List の move や Map の surviving key、object 内の既知 property 更新では、
-コメント・quote・raw scalar/key 表現を可能な範囲で保持します。
-
-source と serializer representation の対応を安全に確認できない場合は whole-value replacement に戻るため、
-任意の custom serializer で subtree presentation の完全保持を保証するものではありません。
-
-## Sequence identity
-
-List 内 object の move + update では、最初の required non-inline scalar property を
-暗黙 identity 候補として使います。一意かつ non-null である場合だけ identity match します。
-
-必要な場合のみ `@YamlIdentity` / `@YamlIdentityDisabled` で明示できます。
-required であること自体は業務上の stable identity を保証しません。
-
-## YAML の制限
-
-現在は Anchor、Alias、Recursive Alias、Merge Key、Complex Mapping Key をサポートしていません。
-Quoted `"<<“` ではなく、通常の文字列キー `"<<“` は merge key と区別されます。
+公開ABIはバージョン管理した基準と比較します。通常CIでは基準を自動更新しません。
+性能測定は`bash ./gradlew :benchmark:jmh`で別JVMを使用し、通常テストに時間の合否しきい値は設けません。
+benchmarkは非公開モジュールで、利用者のruntime依存に入りません。
 
 ## ドキュメント
 
-- [使い方](docs/usage.md)
-- [旧 Schema API からの移行](docs/migration-v2.md)
-- [transactional save](docs/transactional-save.md)
-- [Sequence identity](docs/sequence-identity.md)
-- [省略 property の保存](docs/omitted-properties.md)
-
-## テスト / ビルド
-
-```bash
-./gradlew test
-./gradlew build
-```
-
-性能診断は通常テストから分離されています。
-
-```bash
-./gradlew :core:test --tests '*ProfileTest' -PprofileSavePlanner=true
-```
+- [利用方法](docs/usage.md) / [Java API](docs/java-interop.md) / [移行ガイド](docs/migration-v2.md)
+- [保存トランザクション](docs/transactional-save.md) / [省略値](docs/omitted-properties.md) / [Sequence identity](docs/sequence-identity.md)
+- [ABI検査](docs/api-compatibility.md) / [JVM検証](docs/jvm-testing.md) / [JMH](docs/benchmarks.md)
+- [配布consumer](samples/README.md) / [JitPack公開手順](docs/releasing.md) / [変更履歴](CHANGELOG.md)
 
 ## ライセンス
 
-Apache License 2.0。詳細は [LICENSE](LICENSE) を参照してください。
+[Apache License 2.0](LICENSE)
