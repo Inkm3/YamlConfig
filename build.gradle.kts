@@ -27,11 +27,13 @@ val testJavaVersion = providers.gradleProperty("testJavaVersion").map { value ->
 subprojects {
     group = rootProject.group
     version = rootProject.version
-    if (name in publishedProjects) apply(plugin = "maven-publish")
+    // Capture before withPlugin: AppliedPlugin also exposes a name property.
+    val published = name in publishedProjects
+    if (published) apply(plugin = "maven-publish")
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         extensions.configure<KotlinJvmExtension> {
             jvmToolchain(17)
-            if (project.name in publishedProjects) explicitApi()
+            if (published) explicitApi()
             compilerOptions {
                 jvmTarget.set(JvmTarget.JVM_17)
                 javaParameters.set(true)
@@ -41,9 +43,9 @@ subprojects {
     pluginManager.withPlugin("java") {
         extensions.configure<JavaPluginExtension> {
             toolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
-            if (project.name in publishedProjects) withSourcesJar()
+            if (published) withSourcesJar()
         }
-        if (name in publishedProjects) {
+        if (published) {
             extensions.configure<PublishingExtension> {
                 publications {
                     create<MavenPublication>("maven") { from(components["java"]) }
