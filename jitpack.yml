@@ -1,0 +1,4 @@
+jdk:
+  - openjdk17
+install:
+  - bash ./gradlew clean build publishToMavenLocal --stacktrace --no-daemon
