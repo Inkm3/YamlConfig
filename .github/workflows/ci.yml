@@ -2,11 +2,8 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-
+    branches: [main, dev]
   pull_request:
-
   workflow_dispatch:
 
 permissions:
@@ -18,22 +15,22 @@ concurrency:
 
 jobs:
   verify:
-    name: Build and test
+    name: Build and test (JDK ${{ matrix.java }})
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [17, 21, 25]
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
-
       - name: Set up Java 17
         uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
-
       - name: Build and test
-        run: bash ./gradlew build --stacktrace --no-daemon
+        run: bash ./gradlew build --stacktrace --no-daemon -PtestJavaVersion=${{ matrix.java }}
