@@ -1,4 +1,3 @@
-
 plugins {
     `java-library`
     alias(libs.plugins.kotlin.jvm)
@@ -7,8 +6,13 @@ plugins {
 
 dependencies {
     api(project(":core"))
-
     implementation(libs.snakeyaml.engine)
-
     testImplementation(kotlin("test"))
+}
+
+kotlin {
+    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+    abiValidation {
+        referenceDumpDir.set(layout.projectDirectory.dir("api"))
+    }
 }

@@ -1,0 +1,6 @@
+public final class com/github/inkm3/yamlconfig/snakeyaml/SnakeYamlEngine : com/github/inkm3/yamlconfig/spi/YamlEngine {
+	public fun <init> ()V
+	public fun parse (Lcom/github/inkm3/yamlconfig/source/YamlInput;)Lcom/github/inkm3/yamlconfig/spi/YamlDocument;
+	public fun write (Lcom/github/inkm3/yamlconfig/spi/YamlEditor;Lcom/github/inkm3/yamlconfig/source/YamlOutput;)V
+}
+
