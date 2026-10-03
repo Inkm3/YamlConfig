@@ -21,7 +21,7 @@ import kotlinx.serialization.serializer
  *
  * Instances are reusable: mutable encoder/decoder state belongs to each call.
  */
-public class YamlSerialization(
+public class YamlSerialization @JvmOverloads constructor(
     override val serializersModule: SerializersModule = EmptySerializersModule(),
     public val encodeDefaults: Boolean = true,
     public val ignoreUnknownKeys: Boolean = false,
@@ -48,6 +48,7 @@ public class YamlSerialization(
         decodeFromNode(serializersModule.serializer<T>(), node)
 
     public companion object {
+        @JvmStatic
         public val Default: YamlSerialization = YamlSerialization()
     }
 }
