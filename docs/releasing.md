@@ -1,9 +1,9 @@
 # Versioning and JitPack release
 
-Development uses `projectVersion=2.0.0-SNAPSHOT`; release preparation changes it
-to `2.0.0` only after the planned APIs and checks are ready. A version property is
-not a publication and does not create a tag. CI does not change visibility or
-create releases/tags. The owner performs final GitHub synchronization/publication.
+The prepared source version is `projectVersion=2.0.0`. Development before this
+milestone used `2.0.0-SNAPSHOT`. A version property is not a publication and does
+not create a tag. CI does not change visibility or create releases/tags. The
+owner performs final GitHub synchronization/publication after GitLab verification.
 
 ## Exact coordinates
 
@@ -33,6 +33,7 @@ for reproducible consumption. A Gradle SNAPSHOT property does not create a tag.
 The quality job writes artifacts to an isolated Maven directory and launches
 separate Java/Kotlin builds with POM-only dependency resolution. This verifies
 packaging/transitive dependencies, not JitPack availability or public access.
+There must be no failed jobs or unverified rewritten commits before publication.
 
 ## Owner synchronization and publication (PowerShell)
 
@@ -43,24 +44,28 @@ git fetch gitlab
 git fetch github
 git log -1 --oneline gitlab/main
 git log --oneline gitlab/main..github/main
+git log --oneline gitlab/dev..github/dev
 ```
 
-The last command must show no GitHub-only commits for a normal fast-forward.
-If it shows commits, inspect them and stop; do not use an unreviewed force push.
-Then synchronize the verified branches:
+The last two commands must show no GitHub-only commits for normal fast-forwards.
+If either shows commits or fails, inspect it and stop; do not use an unreviewed
+force push. Check both remote URLs before sending private changes. Then sync:
 
 ```powershell
 git push github refs/remotes/gitlab/main:refs/heads/main refs/remotes/gitlab/dev:refs/heads/dev
+git fetch github
+git rev-parse gitlab/main github/main
+git rev-parse gitlab/dev github/dev
 ```
 
-Verify the remote refs are identical per branch. Main and dev may legitimately
-have different SHAs after a merge; do not require all six refs to be identical.
-Make GitHub public only when ready. Confirm GitHub CI also succeeds after sync.
+Verify each pair is identical. Main and dev may legitimately have different SHAs
+after a merge; do not require all six refs to be identical. Check GitHub CI before
+publishing. Make GitHub public only when ready, after reviewing committed content.
 
 Create the tag at the exact verified main SHA, not whichever local HEAD is active:
 
 ```powershell
-git tag -a v2.0.0 gitlab/main -m "release: 2.0.0"
+git tag -a v2.0.0 gitlab/main -m "chore: 2.0.0リリース"
 git push gitlab refs/tags/v2.0.0
 git push github refs/tags/v2.0.0
 ```
