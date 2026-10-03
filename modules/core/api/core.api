@@ -1,0 +1,284 @@
+public final class com/github/inkm3/yamlconfig/YamlConfig {
+	public final fun load ()Lcom/github/inkm3/yamlconfig/YamlConfigSession;
+}
+
+public final class com/github/inkm3/yamlconfig/YamlConfigBuilder {
+	public final fun automaticMissingFilePolicy ()Lcom/github/inkm3/yamlconfig/YamlConfigBuilder;
+	public final fun build ()Lcom/github/inkm3/yamlconfig/YamlConfig;
+	public final fun defaultsSource (Lcom/github/inkm3/yamlconfig/source/YamlInput;)Lcom/github/inkm3/yamlconfig/YamlConfigBuilder;
+	public final fun missingFilePolicy (Lcom/github/inkm3/yamlconfig/source/YamlMissingFilePolicy;)Lcom/github/inkm3/yamlconfig/YamlConfigBuilder;
+	public final fun saveMode (Lcom/github/inkm3/yamlconfig/save/YamlSaveMode;)Lcom/github/inkm3/yamlconfig/YamlConfigBuilder;
+	public final fun serialization (Lcom/github/inkm3/yamlconfig/serialization/YamlSerialization;)Lcom/github/inkm3/yamlconfig/YamlConfigBuilder;
+}
+
+public final class com/github/inkm3/yamlconfig/YamlConfigSession {
+	public final fun getValue ()Ljava/lang/Object;
+	public final fun save ()V
+	public final fun setValue (Ljava/lang/Object;)V
+}
+
+public final class com/github/inkm3/yamlconfig/YamlConfigs {
+	public static final field INSTANCE Lcom/github/inkm3/yamlconfig/YamlConfigs;
+	public static final fun builder (Lcom/github/inkm3/yamlconfig/spi/YamlEngine;Lcom/github/inkm3/yamlconfig/source/YamlSource;Lkotlinx/serialization/KSerializer;)Lcom/github/inkm3/yamlconfig/YamlConfigBuilder;
+	public static final fun create (Lcom/github/inkm3/yamlconfig/spi/YamlEngine;Lcom/github/inkm3/yamlconfig/source/YamlSource;Lkotlinx/serialization/KSerializer;)Lcom/github/inkm3/yamlconfig/YamlConfig;
+}
+
+public final class com/github/inkm3/yamlconfig/YamlSerializedConfigsKt {
+	public static final fun yamlConfig (Lcom/github/inkm3/yamlconfig/spi/YamlEngine;Lcom/github/inkm3/yamlconfig/source/YamlSource;Lkotlinx/serialization/KSerializer;Lcom/github/inkm3/yamlconfig/source/YamlInput;Lcom/github/inkm3/yamlconfig/save/YamlSaveMode;Lcom/github/inkm3/yamlconfig/source/YamlMissingFilePolicy;Lcom/github/inkm3/yamlconfig/serialization/YamlSerialization;)Lcom/github/inkm3/yamlconfig/YamlConfig;
+	public static synthetic fun yamlConfig$default (Lcom/github/inkm3/yamlconfig/spi/YamlEngine;Lcom/github/inkm3/yamlconfig/source/YamlSource;Lkotlinx/serialization/KSerializer;Lcom/github/inkm3/yamlconfig/source/YamlInput;Lcom/github/inkm3/yamlconfig/save/YamlSaveMode;Lcom/github/inkm3/yamlconfig/source/YamlMissingFilePolicy;Lcom/github/inkm3/yamlconfig/serialization/YamlSerialization;ILjava/lang/Object;)Lcom/github/inkm3/yamlconfig/YamlConfig;
+}
+
+public abstract interface annotation class com/github/inkm3/yamlconfig/annotation/YamlIdentity : java/lang/annotation/Annotation {
+}
+
+public final synthetic class com/github/inkm3/yamlconfig/annotation/YamlIdentity$Impl : com/github/inkm3/yamlconfig/annotation/YamlIdentity {
+	public fun <init> ()V
+}
+
+public abstract interface annotation class com/github/inkm3/yamlconfig/annotation/YamlIdentityDisabled : java/lang/annotation/Annotation {
+}
+
+public final synthetic class com/github/inkm3/yamlconfig/annotation/YamlIdentityDisabled$Impl : com/github/inkm3/yamlconfig/annotation/YamlIdentityDisabled {
+	public fun <init> ()V
+}
+
+public class com/github/inkm3/yamlconfig/exception/YamlConfigException : java/lang/RuntimeException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public class com/github/inkm3/yamlconfig/exception/YamlEditException : com/github/inkm3/yamlconfig/exception/YamlConfigException {
+	public fun <init> (Lcom/github/inkm3/yamlconfig/path/YamlPath;Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Lcom/github/inkm3/yamlconfig/path/YamlPath;Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getPath ()Lcom/github/inkm3/yamlconfig/path/YamlPath;
+}
+
+public class com/github/inkm3/yamlconfig/exception/YamlParseException : com/github/inkm3/yamlconfig/exception/YamlConfigException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getInputDescription ()Ljava/lang/String;
+}
+
+public class com/github/inkm3/yamlconfig/exception/YamlWriteException : com/github/inkm3/yamlconfig/exception/YamlConfigException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getOutputDescription ()Ljava/lang/String;
+}
+
+public final class com/github/inkm3/yamlconfig/node/YamlMapKey {
+	public fun <init> (Ljava/lang/String;Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public final fun copy (Ljava/lang/String;Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;)Lcom/github/inkm3/yamlconfig/node/YamlMapKey;
+	public static synthetic fun copy$default (Lcom/github/inkm3/yamlconfig/node/YamlMapKey;Ljava/lang/String;Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;ILjava/lang/Object;)Lcom/github/inkm3/yamlconfig/node/YamlMapKey;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKind ()Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/github/inkm3/yamlconfig/node/YamlMappingNode : com/github/inkm3/yamlconfig/node/YamlNode {
+	public fun <init> (Ljava/util/Map;)V
+	public final fun containsKey (Lcom/github/inkm3/yamlconfig/node/YamlMapKey;)Z
+	public final fun containsKey (Ljava/lang/String;)Z
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun get (Lcom/github/inkm3/yamlconfig/node/YamlMapKey;)Lcom/github/inkm3/yamlconfig/node/YamlNode;
+	public final fun get (Ljava/lang/String;)Lcom/github/inkm3/yamlconfig/node/YamlNode;
+	public final fun getEntries ()Ljava/util/Map;
+	public final fun getSize ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/node/YamlNode {
+}
+
+public final class com/github/inkm3/yamlconfig/node/YamlScalarKind : java/lang/Enum {
+	public static final field BOOLEAN Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public static final field FLOAT Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public static final field INTEGER Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public static final field NULL Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public static final field STRING Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public static fun values ()[Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+}
+
+public final class com/github/inkm3/yamlconfig/node/YamlScalarNode : com/github/inkm3/yamlconfig/node/YamlNode {
+	public fun <init> (Ljava/lang/String;Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public final fun copy (Ljava/lang/String;Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;)Lcom/github/inkm3/yamlconfig/node/YamlScalarNode;
+	public static synthetic fun copy$default (Lcom/github/inkm3/yamlconfig/node/YamlScalarNode;Ljava/lang/String;Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;ILjava/lang/Object;)Lcom/github/inkm3/yamlconfig/node/YamlScalarNode;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKind ()Lcom/github/inkm3/yamlconfig/node/YamlScalarKind;
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/github/inkm3/yamlconfig/node/YamlSequenceNode : com/github/inkm3/yamlconfig/node/YamlNode {
+	public fun <init> (Ljava/util/Collection;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun get (I)Lcom/github/inkm3/yamlconfig/node/YamlNode;
+	public final fun getElements ()Ljava/util/List;
+	public final fun getSize ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/github/inkm3/yamlconfig/path/YamlPath {
+	public static final field Companion Lcom/github/inkm3/yamlconfig/path/YamlPath$Companion;
+	public final fun child (I)Lcom/github/inkm3/yamlconfig/path/YamlPath;
+	public final fun child (Lcom/github/inkm3/yamlconfig/node/YamlMapKey;)Lcom/github/inkm3/yamlconfig/path/YamlPath;
+	public final fun child (Ljava/lang/String;)Lcom/github/inkm3/yamlconfig/path/YamlPath;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSegments ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun isRoot ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/github/inkm3/yamlconfig/path/YamlPath$Companion {
+	public final fun root ()Lcom/github/inkm3/yamlconfig/path/YamlPath;
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/path/YamlPath$Segment {
+}
+
+public final class com/github/inkm3/yamlconfig/path/YamlPath$Segment$Index : com/github/inkm3/yamlconfig/path/YamlPath$Segment {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/github/inkm3/yamlconfig/path/YamlPath$Segment$Index;
+	public static synthetic fun copy$default (Lcom/github/inkm3/yamlconfig/path/YamlPath$Segment$Index;IILjava/lang/Object;)Lcom/github/inkm3/yamlconfig/path/YamlPath$Segment$Index;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIndex ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/github/inkm3/yamlconfig/path/YamlPath$Segment$Key : com/github/inkm3/yamlconfig/path/YamlPath$Segment {
+	public fun <init> (Lcom/github/inkm3/yamlconfig/node/YamlMapKey;)V
+	public final fun component1 ()Lcom/github/inkm3/yamlconfig/node/YamlMapKey;
+	public final fun copy (Lcom/github/inkm3/yamlconfig/node/YamlMapKey;)Lcom/github/inkm3/yamlconfig/path/YamlPath$Segment$Key;
+	public static synthetic fun copy$default (Lcom/github/inkm3/yamlconfig/path/YamlPath$Segment$Key;Lcom/github/inkm3/yamlconfig/node/YamlMapKey;ILjava/lang/Object;)Lcom/github/inkm3/yamlconfig/path/YamlPath$Segment$Key;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKey ()Lcom/github/inkm3/yamlconfig/node/YamlMapKey;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/github/inkm3/yamlconfig/save/YamlSaveMode : java/lang/Enum {
+	public static final field MINIMAL_DIFFERENCE Lcom/github/inkm3/yamlconfig/save/YamlSaveMode;
+	public static final field PRESERVE_OVERRIDES Lcom/github/inkm3/yamlconfig/save/YamlSaveMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/github/inkm3/yamlconfig/save/YamlSaveMode;
+	public static fun values ()[Lcom/github/inkm3/yamlconfig/save/YamlSaveMode;
+}
+
+public final class com/github/inkm3/yamlconfig/serialization/YamlSerialization : kotlinx/serialization/SerialFormat {
+	public static final field Companion Lcom/github/inkm3/yamlconfig/serialization/YamlSerialization$Companion;
+	public fun <init> ()V
+	public fun <init> (Lkotlinx/serialization/modules/SerializersModule;)V
+	public fun <init> (Lkotlinx/serialization/modules/SerializersModule;Z)V
+	public fun <init> (Lkotlinx/serialization/modules/SerializersModule;ZZ)V
+	public synthetic fun <init> (Lkotlinx/serialization/modules/SerializersModule;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun decodeFromNode (Lkotlinx/serialization/DeserializationStrategy;Lcom/github/inkm3/yamlconfig/node/YamlNode;)Ljava/lang/Object;
+	public final fun encodeToNode (Lkotlinx/serialization/SerializationStrategy;Ljava/lang/Object;)Lcom/github/inkm3/yamlconfig/node/YamlNode;
+	public static final fun getDefault ()Lcom/github/inkm3/yamlconfig/serialization/YamlSerialization;
+	public final fun getEncodeDefaults ()Z
+	public final fun getIgnoreUnknownKeys ()Z
+	public fun getSerializersModule ()Lkotlinx/serialization/modules/SerializersModule;
+}
+
+public final class com/github/inkm3/yamlconfig/serialization/YamlSerialization$Companion {
+	public final fun getDefault ()Lcom/github/inkm3/yamlconfig/serialization/YamlSerialization;
+}
+
+public final class com/github/inkm3/yamlconfig/source/ClasspathYamlInput : com/github/inkm3/yamlconfig/source/YamlInput {
+	public fun <init> (Ljava/lang/ClassLoader;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/nio/charset/Charset;)V
+	public synthetic fun <init> (Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/nio/charset/Charset;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getDescription ()Ljava/lang/String;
+	public fun openReader ()Ljava/io/Reader;
+}
+
+public final class com/github/inkm3/yamlconfig/source/PathYamlSource : com/github/inkm3/yamlconfig/source/YamlSource {
+	public fun <init> (Ljava/nio/file/Path;)V
+	public fun <init> (Ljava/nio/file/Path;Ljava/nio/charset/Charset;)V
+	public synthetic fun <init> (Ljava/nio/file/Path;Ljava/nio/charset/Charset;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun beginWrite ()Lcom/github/inkm3/yamlconfig/source/YamlWriteTransaction;
+	public fun exists ()Z
+	public fun getDescription ()Ljava/lang/String;
+	public final fun getPath ()Ljava/nio/file/Path;
+	public fun openReader ()Ljava/io/Reader;
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/source/YamlInput {
+	public abstract fun getDescription ()Ljava/lang/String;
+	public abstract fun openReader ()Ljava/io/Reader;
+}
+
+public final class com/github/inkm3/yamlconfig/source/YamlMissingFilePolicy : java/lang/Enum {
+	public static final field COPY_DEFAULTS Lcom/github/inkm3/yamlconfig/source/YamlMissingFilePolicy;
+	public static final field CREATE_EMPTY Lcom/github/inkm3/yamlconfig/source/YamlMissingFilePolicy;
+	public static final field DO_NOT_CREATE Lcom/github/inkm3/yamlconfig/source/YamlMissingFilePolicy;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/github/inkm3/yamlconfig/source/YamlMissingFilePolicy;
+	public static fun values ()[Lcom/github/inkm3/yamlconfig/source/YamlMissingFilePolicy;
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/source/YamlOutput {
+	public abstract fun beginWrite ()Lcom/github/inkm3/yamlconfig/source/YamlWriteTransaction;
+	public abstract fun getDescription ()Ljava/lang/String;
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/source/YamlSource : com/github/inkm3/yamlconfig/source/YamlInput, com/github/inkm3/yamlconfig/source/YamlOutput {
+	public fun exists ()Z
+}
+
+public final class com/github/inkm3/yamlconfig/source/YamlSource$DefaultImpls {
+	public static fun exists (Lcom/github/inkm3/yamlconfig/source/YamlSource;)Z
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/source/YamlWriteTransaction : java/io/Closeable {
+	public abstract fun close ()V
+	public abstract fun commit ()V
+	public abstract fun getWriter ()Ljava/io/Writer;
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/spi/YamlDocument {
+	public abstract fun editor ()Lcom/github/inkm3/yamlconfig/spi/YamlEditor;
+	public abstract fun getRoot ()Lcom/github/inkm3/yamlconfig/node/YamlNode;
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/spi/YamlEditor {
+	public abstract fun fork ()Lcom/github/inkm3/yamlconfig/spi/YamlEditor;
+	public abstract fun getRoot ()Lcom/github/inkm3/yamlconfig/node/YamlNode;
+	public abstract fun mapping (Lcom/github/inkm3/yamlconfig/path/YamlPath;)Lcom/github/inkm3/yamlconfig/spi/editor/YamlMappingEditor;
+	public abstract fun remove (Lcom/github/inkm3/yamlconfig/path/YamlPath;)V
+	public abstract fun sequence (Lcom/github/inkm3/yamlconfig/path/YamlPath;)Lcom/github/inkm3/yamlconfig/spi/editor/YamlSequenceEditor;
+	public abstract fun set (Lcom/github/inkm3/yamlconfig/path/YamlPath;Lcom/github/inkm3/yamlconfig/node/YamlNode;)V
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/spi/YamlEngine {
+	public abstract fun parse (Lcom/github/inkm3/yamlconfig/source/YamlInput;)Lcom/github/inkm3/yamlconfig/spi/YamlDocument;
+	public abstract fun write (Lcom/github/inkm3/yamlconfig/spi/YamlEditor;Lcom/github/inkm3/yamlconfig/source/YamlOutput;)V
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/spi/editor/YamlCollectionEditor {
+	public abstract fun insert (Ljava/lang/Object;Lcom/github/inkm3/yamlconfig/node/YamlNode;)V
+	public abstract fun remove (Ljava/lang/Object;)V
+	public abstract fun replace (Ljava/lang/Object;Lcom/github/inkm3/yamlconfig/node/YamlNode;)V
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/spi/editor/YamlMappingEditor : com/github/inkm3/yamlconfig/spi/editor/YamlCollectionEditor {
+}
+
+public abstract interface class com/github/inkm3/yamlconfig/spi/editor/YamlSequenceEditor : com/github/inkm3/yamlconfig/spi/editor/YamlCollectionEditor {
+	public abstract fun getSize ()I
+	public abstract fun move (II)V
+}
+
