@@ -27,14 +27,14 @@ cache:
 verify:
   stage: verify
   image: eclipse-temurin:17-jdk
+  rules:
+    - if: '$ABI_BOOTSTRAP == "true"'
+      when: never
+    - when: on_success
   parallel:
     matrix:
       - TEST_JAVA_VERSION: ["17", "21", "25"]
-  tags:
-    - docker
-    - linux
-    - build01
-    - java
+  tags: [docker, linux, build01, java]
   timeout: 15m
   interruptible: true
   script:
@@ -47,3 +47,21 @@ verify:
     reports:
       junit:
         - modules/*/build/test-results/test/TEST-*.xml
+
+abi-bootstrap:
+  stage: verify
+  image: eclipse-temurin:17-jdk
+  variables:
+    TEST_JAVA_VERSION: "17"
+  rules:
+    - if: '$ABI_BOOTSTRAP == "true"'
+  tags: [docker, linux, build01, java]
+  timeout: 15m
+  script:
+    - bash ci/generate-abi.sh
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - build/abi-reference.tar.gz
+      - modules/core/api/
+      - modules/snakeyaml/api/
