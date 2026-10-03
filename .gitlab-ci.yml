@@ -2,10 +2,8 @@ stages:
   - verify
   - quality
   - measure
-
 variables:
   GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
-
 workflow:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -14,7 +12,6 @@ workflow:
     - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"'
       when: never
     - if: '$CI_COMMIT_BRANCH'
-
 cache:
   key:
     prefix: "jdk-$TEST_JAVA_VERSION"
@@ -26,7 +23,6 @@ cache:
     - .gradle/wrapper/
     - .gradle/jdks/
   policy: pull-push
-
 verify:
   stage: verify
   image: eclipse-temurin:17-jdk
@@ -55,7 +51,6 @@ verify:
     reports:
       junit:
         - modules/*/build/test-results/test/TEST-*.xml
-
 quality:
   stage: quality
   image: eclipse-temurin:17-jdk
@@ -76,7 +71,6 @@ quality:
     paths:
       - build/reports/abi-guard/
       - build/smoke-repository/
-
 benchmark:
   stage: measure
   image: eclipse-temurin:17-jdk
@@ -95,7 +89,22 @@ benchmark:
     expire_in: 1 week
     paths:
       - modules/benchmark/build/reports/jmh/
-
+benchmark-comparison:
+  stage: measure
+  image: eclipse-temurin:17-jdk
+  variables:
+    TEST_JAVA_VERSION: "17"
+  rules:
+    - if: '$RUN_JMH_COMPARISON == "true" && $ABI_BOOTSTRAP != "true"'
+  tags: [docker, linux, build01, java]
+  timeout: 30m
+  script:
+    - bash ci/compare-sequence-jmh.sh
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - modules/benchmark/build/reports/comparison/
+      - modules/benchmark/build/reports/comparison.tar.gz
 abi-bootstrap:
   stage: verify
   image: eclipse-temurin:17-jdk
