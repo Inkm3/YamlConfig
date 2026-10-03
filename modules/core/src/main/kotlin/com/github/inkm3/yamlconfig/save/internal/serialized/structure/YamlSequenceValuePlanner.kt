@@ -2,6 +2,7 @@ package com.github.inkm3.yamlconfig.save.internal.serialized.structure
 
 import com.github.inkm3.yamlconfig.node.YamlNode
 import com.github.inkm3.yamlconfig.node.YamlSequenceNode
+import com.github.inkm3.yamlconfig.save.internal.diff.YamlIndexedSequenceDiff
 import com.github.inkm3.yamlconfig.save.internal.diff.YamlSequenceDiff
 import com.github.inkm3.yamlconfig.save.internal.diff.YamlSequenceEdit
 import com.github.inkm3.yamlconfig.save.internal.serialized.identity.YamlSequenceIdentityMatcher
@@ -20,7 +21,14 @@ internal object YamlSequenceValuePlanner {
         val working = user.elements.toMutableList()
         val steps = mutableListOf<YamlSequenceStep>()
         val identity = YamlSequenceIdentityMatcher.create(element, baseline.elements, current.elements)
-        val edits = if (identity == null) {
+        // Small lists retain the allocation-light original path. Node equality and
+        // hashCode have the same semantics; raw user nodes are NEVER used as keys.
+        val edits = if (minOf(baseline.size, current.size) >= 128) {
+            val key: (YamlNode) -> Any? = if (identity == null) { _ -> null } else identity::uniqueKey
+            val update: (YamlNode, YamlNode) -> Boolean = if (identity == null) { _, _ -> true } else identity::matches
+            YamlIndexedSequenceDiff.calculate(baseline.elements, current.elements,
+                { a, b -> a == b }, { it.hashCode() }, key, update)
+        } else if (identity == null) {
             YamlSequenceDiff.calculate(baseline.elements, current.elements) { a, b -> a == b }
         } else {
             YamlSequenceDiff.calculate(baseline.elements, current.elements, { a, b -> a == b },
