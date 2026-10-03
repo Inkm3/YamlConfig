@@ -17,12 +17,11 @@ internal object YamlSequenceValuePlanner {
         user: YamlSequenceNode,
         force: Boolean,
         retainOmitted: Boolean = false,
+        alignment: YamlSourceAlignmentMemo = YamlSourceAlignmentMemo(),
     ): YamlStructuralEdit? {
         val working = user.elements.toMutableList()
         val steps = mutableListOf<YamlSequenceStep>()
         val identity = YamlSequenceIdentityMatcher.create(element, baseline.elements, current.elements)
-        // Small lists retain the allocation-light original path. Node equality and
-        // hashCode have the same semantics; raw user nodes are NEVER used as keys.
         val edits = if (minOf(baseline.size, current.size) >= 128) {
             val key: (YamlNode) -> Any? = if (identity == null) { _ -> null } else identity::uniqueKey
             val update: (YamlNode, YamlNode) -> Boolean = if (identity == null) { _, _ -> true } else identity::matches
@@ -49,12 +48,12 @@ internal object YamlSequenceValuePlanner {
                     steps += YamlSequenceStep.Move(edit.fromIndex, edit.toIndex)
                 }
                 is YamlSequenceEdit.Update -> update(element, edit.index, edit.baseline, edit.current,
-                    working, steps, force, retainOmitted)
+                    working, steps, force, retainOmitted, alignment)
             }
         }
         if (force) {
             for (index in current.elements.indices) update(element, index, current[index], current[index],
-                working, steps, true, retainOmitted)
+                working, steps, true, retainOmitted, alignment)
         }
         return steps.takeIf { it.isNotEmpty() }?.let(YamlStructuralEdit::Sequence)
     }
@@ -62,10 +61,10 @@ internal object YamlSequenceValuePlanner {
     private fun update(
         descriptor: SerialDescriptor, index: Int, baseline: YamlNode, current: YamlNode,
         working: MutableList<YamlNode>, steps: MutableList<YamlSequenceStep>, force: Boolean,
-        retainOmitted: Boolean,
+        retainOmitted: Boolean, alignment: YamlSourceAlignmentMemo,
     ) {
         val edit = YamlStructuralValuePlanner.plan(descriptor, baseline, current, working[index], force,
-            retainOmitted = retainOmitted) ?: return
+            retainOmitted = retainOmitted, alignment = alignment) ?: return
         working[index] = requireNotNull(YamlStructuralNodeEditor.apply(working[index], edit))
         steps += YamlSequenceStep.Update(index, edit)
     }

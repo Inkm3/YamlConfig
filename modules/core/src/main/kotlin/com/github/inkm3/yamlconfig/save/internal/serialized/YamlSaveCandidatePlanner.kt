@@ -3,11 +3,11 @@ package com.github.inkm3.yamlconfig.save.internal.serialized
 import com.github.inkm3.yamlconfig.node.YamlNode
 import com.github.inkm3.yamlconfig.save.YamlSaveMode
 import com.github.inkm3.yamlconfig.save.internal.serialized.omission.YamlOmittedPropertyPruner
+import com.github.inkm3.yamlconfig.save.internal.serialized.structure.YamlSourceAlignmentMemo
 import com.github.inkm3.yamlconfig.save.internal.serialized.validation.YamlCandidateValidation
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
 
-/** A candidate and the exact edits that produce it from the original user node. */
 internal data class YamlSaveCandidate(val root: YamlNode?, val patches: List<YamlValuePatch>)
 
 /** Pure planning/validation boundary, independent of session state, editors and I/O. */
@@ -18,32 +18,28 @@ internal class YamlSaveCandidatePlanner(
     internal fun plan(
         baseline: YamlNode, expected: YamlNode, user: YamlNode?, mode: YamlSaveMode,
     ): YamlSaveCandidate {
-        // A NEW memo per invocation. Neither another save nor the actual Editor
-        // can be validated by an old result. Descriptor/defaults remain fixed here.
+        // Both memos die with this invocation; neither validates the real Editor.
         val validation = YamlCandidateValidation(encodeReload)
-        var candidate = select(baseline, expected, user, validation)
+        val alignment = YamlSourceAlignmentMemo()
+        var candidate = select(baseline, expected, user, validation, alignment)
         if (mode == YamlSaveMode.MINIMAL_DIFFERENCE) {
             val reduction = YamlMinimalOverrideReducer.reduceToResult(descriptor, candidate.root) {
                 matches(it, expected, validation)
             }
-            // The reducer already constructed and validated this exact final node.
             candidate = YamlSaveCandidate(reduction.root, candidate.patches + reduction.removals)
         }
         return candidate
     }
 
     private fun select(baseline: YamlNode, expected: YamlNode, user: YamlNode?,
-        validation: YamlCandidateValidation): YamlSaveCandidate {
-        // Each strategy starts from the original user document. Retained raw
-        // values are candidates, never assumed to be the missing current values.
+        validation: YamlCandidateValidation, alignment: YamlSourceAlignmentMemo): YamlSaveCandidate {
         for (force in listOf(false, true)) {
-            val retained = create(baseline, expected, user, force, retainOmitted = true)
+            val retained = create(baseline, expected, user, force, retainOmitted = true, alignment)
             repairOmissions(retained, expected, validation)?.let { return it }
         }
-        // Preserve the old deletion strategy for cases not repairable above.
-        val ordinary = create(baseline, expected, user, force = false, retainOmitted = false)
+        val ordinary = create(baseline, expected, user, force = false, retainOmitted = false, alignment)
         if (matches(ordinary.root, expected, validation)) return ordinary
-        val forced = create(baseline, expected, user, force = true, retainOmitted = false)
+        val forced = create(baseline, expected, user, force = true, retainOmitted = false, alignment)
         requireEqual(validation.evaluate(forced.root), expected)
         return forced
     }
@@ -58,16 +54,15 @@ internal class YamlSaveCandidatePlanner(
             val patch = YamlValuePatch.structural(edit)
             val root = patch.applyTo(candidate.root)
             if (root == candidate.root) return null
-            // Every pass strictly removes existing object properties; finite for
-            // a finite document. Dependencies may require another full reload.
             candidate = YamlSaveCandidate(root, candidate.patches + patch)
         }
     }
 
     private fun create(
-        baseline: YamlNode, expected: YamlNode, user: YamlNode?, force: Boolean, retainOmitted: Boolean,
+        baseline: YamlNode, expected: YamlNode, user: YamlNode?, force: Boolean,
+        retainOmitted: Boolean, alignment: YamlSourceAlignmentMemo,
     ): YamlSaveCandidate {
-        val patches = YamlKnownValuePlanner.plan(descriptor, baseline, expected, user, force, retainOmitted)
+        val patches = YamlKnownValuePlanner.plan(descriptor, baseline, expected, user, force, retainOmitted, alignment)
         return YamlSaveCandidate(apply(user, patches), patches)
     }
 
