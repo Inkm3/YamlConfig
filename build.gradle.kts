@@ -17,6 +17,7 @@ plugins {
 group = providers.gradleProperty("projectGroup").get()
 version = providers.gradleProperty("projectVersion").get()
 val publishedProjects = setOf("core", "snakeyaml")
+val smokeRepository = layout.buildDirectory.dir("smoke-repository")
 val testJavaVersion = providers.gradleProperty("testJavaVersion").map { value ->
     value.toIntOrNull()?.also { require(it in setOf(17, 21, 25)) {
         "testJavaVersion must be one of 17, 21, 25"
@@ -27,7 +28,6 @@ subprojects {
     group = rootProject.group
     version = rootProject.version
     if (name in publishedProjects) apply(plugin = "maven-publish")
-
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         extensions.configure<KotlinJvmExtension> {
             jvmToolchain(17)
@@ -47,6 +47,12 @@ subprojects {
             extensions.configure<PublishingExtension> {
                 publications {
                     create<MavenPublication>("maven") { from(components["java"]) }
+                }
+                repositories {
+                    maven {
+                        name = "Smoke"
+                        url = smokeRepository.get().asFile.toURI()
+                    }
                 }
             }
         }
