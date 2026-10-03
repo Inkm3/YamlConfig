@@ -5,7 +5,7 @@ import java.io.Reader
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
-public class ClasspathYamlInput public constructor(
+public class ClasspathYamlInput @JvmOverloads public constructor(
     private val classLoader: ClassLoader,
     private val resourceName: String,
     private val charset: Charset = StandardCharsets.UTF_8

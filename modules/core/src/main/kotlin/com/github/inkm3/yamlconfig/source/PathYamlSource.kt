@@ -6,7 +6,7 @@ import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
 
-public class PathYamlSource public constructor(
+public class PathYamlSource @JvmOverloads public constructor(
     path: Path,
     private val charset: Charset = Charsets.UTF_8,
 ): YamlSource {
