@@ -16,9 +16,7 @@ plugins {
 
 group = providers.gradleProperty("projectGroup").get()
 version = providers.gradleProperty("projectVersion").get()
-
 val publishedProjects = setOf("core", "snakeyaml")
-// Compiled API target remains 17; only Test launchers vary across CI jobs.
 val testJavaVersion = providers.gradleProperty("testJavaVersion").map { value ->
     value.toIntOrNull()?.also { require(it in setOf(17, 21, 25)) {
         "testJavaVersion must be one of 17, 21, 25"
@@ -28,13 +26,12 @@ val testJavaVersion = providers.gradleProperty("testJavaVersion").map { value ->
 subprojects {
     group = rootProject.group
     version = rootProject.version
-    if (name in publishedProjects) {
-        apply(plugin = "maven-publish")
-    }
+    if (name in publishedProjects) apply(plugin = "maven-publish")
+
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         extensions.configure<KotlinJvmExtension> {
             jvmToolchain(17)
-            explicitApi()
+            if (project.name in publishedProjects) explicitApi()
             compilerOptions {
                 jvmTarget.set(JvmTarget.JVM_17)
                 javaParameters.set(true)
@@ -44,11 +41,13 @@ subprojects {
     pluginManager.withPlugin("java") {
         extensions.configure<JavaPluginExtension> {
             toolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
-            withSourcesJar()
+            if (project.name in publishedProjects) withSourcesJar()
         }
-        extensions.configure<PublishingExtension> {
-            publications {
-                create<MavenPublication>("maven") { from(components["java"]) }
+        if (name in publishedProjects) {
+            extensions.configure<PublishingExtension> {
+                publications {
+                    create<MavenPublication>("maven") { from(components["java"]) }
+                }
             }
         }
         tasks.withType<JavaCompile>().configureEach {
