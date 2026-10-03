@@ -1,0 +1,23 @@
+{
+  "scope": "Shared Runner, complete in-memory load/save/text emission workload, no file I/O. Summary scores, not individual iteration samples.",
+  "referenceCommit": "5cba09ad7237784746b6fe4c0e7f1cf2e8dbcdbf",
+  "currentCommit": "08a572a103b530cf80bebf49ee169acce8d20f70",
+  "pipeline": 367,
+  "job": 975,
+  "source": "https://git.modoki123.xyz/ink/yamlconfig/-/jobs/975",
+  "jmhVersion": "1.37",
+  "javaMajor": 17,
+  "forks": 2,
+  "warmupIterations": 10,
+  "measurementIterations": 10,
+  "iterationTimeMs": 300,
+  "order": ["reference", "current", "current", "reference"],
+  "metric": "average time, us/op; error is the JMH-reported scoreError, not an independent speedup confidence bound",
+  "results": [
+    {"pair":1,"size":16,"reference":510.95041458238427,"current":513.8737157522208,"referenceError":25.89384162114987,"currentError":11.713733989186665,"timeChangePercent":0.5721301101645704,"referenceBytes":1268293.7075221227,"currentBytes":1274225.0668913783,"allocationChangePercent":0.4676644955405207},
+    {"pair":1,"size":256,"reference":8434.92417875366,"current":8276.066699827972,"referenceError":330.69967300490225,"currentError":217.09502052672792,"timeChangePercent":-1.8833302535881224,"referenceBytes":18710087.72286681,"currentBytes":18945861.32340903,"allocationChangePercent":1.2601416093525941},
+    {"pair":2,"size":16,"reference":482.2195523207477,"current":529.6526852728936,"referenceError":9.21292316452721,"currentError":16.954961560317052,"timeChangePercent":9.836418437176064,"referenceBytes":1273083.1889571599,"currentBytes":1271505.2457121606,"allocationChangePercent":-0.12394659348945458},
+    {"pair":2,"size":256,"reference":7953.493373655944,"current":7530.263300800817,"referenceError":99.85658350526646,"currentError":194.23922361844953,"timeChangePercent":-5.321310435197901,"referenceBytes":18722453.516073972,"currentBytes":18946263.027637795,"allocationChangePercent":1.1954069554595215}
+  ],
+  "interpretation": "Large-case point estimates improved in both orders, with increased allocation. Small-case results include a regression. No claim of universal improvement or isolation of index and memo effects. Keep the small-list original diff path and bounded plan-local memo; retain safety checks. Further workload-specific profiling remains appropriate."
+}

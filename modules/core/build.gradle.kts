@@ -1,6 +1,5 @@
 plugins {
     `java-library`
-
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -9,8 +8,14 @@ description = "Core API for YamlConfig"
 
 dependencies {
     api(libs.kotlinx.serialization.core)
-
     testImplementation(kotlin("test"))
+}
+
+kotlin {
+    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+    abiValidation {
+        referenceDumpDir.set(layout.projectDirectory.dir("api"))
+    }
 }
 
 // Opt-in diagnostics only; ordinary build/test keeps its existing cache behavior.

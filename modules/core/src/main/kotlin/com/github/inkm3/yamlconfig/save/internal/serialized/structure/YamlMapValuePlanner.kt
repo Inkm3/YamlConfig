@@ -13,6 +13,7 @@ internal object YamlMapValuePlanner {
         user: YamlMappingNode,
         force: Boolean,
         retainOmitted: Boolean = false,
+        alignment: YamlSourceAlignmentMemo = YamlSourceAlignmentMemo(),
     ): YamlStructuralEdit? {
         val keyDescriptor = descriptor.getElementDescriptor(0)
         val before = YamlScalarRepresentation.index(keyDescriptor, baseline.entries.keys)
@@ -33,7 +34,7 @@ internal object YamlMapValuePlanner {
             } else {
                 val edit = YamlStructuralValuePlanner.plan(valueDescriptor,
                     baseline[before.getValue(key)], current[newRaw], user[oldRaw], force,
-                    retainOmitted = retainOmitted)
+                    retainOmitted = retainOmitted, alignment = alignment)
                 if (edit != null) changes[oldRaw] = edit
             }
         }

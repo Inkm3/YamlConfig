@@ -5,11 +5,7 @@ import com.github.inkm3.yamlconfig.node.YamlNode
 import kotlinx.serialization.descriptors.SerialDescriptor
 import java.util.IdentityHashMap
 
-/**
- * One diff's identity table. Count occurrences in the original lists, never in
- * the shrinking working list: deleting a duplicate must not make it unambiguous.
- * Reference-keyed caching avoids recursively hashing object nodes per comparison.
- */
+/** Original-list counts remain fixed even when a duplicate is later removed. */
 internal class YamlSequenceIdentityMatcher private constructor(
     field: YamlIdentityField,
     baseline: List<YamlNode>,
@@ -19,9 +15,14 @@ internal class YamlSequenceIdentityMatcher private constructor(
     private val oldCounts = counts(field, baseline)
     private val newCounts = counts(field, current)
 
+    internal fun uniqueKey(node: YamlNode): YamlMapKey? {
+        val id = values[node] ?: return null
+        return id.takeIf { oldCounts[it] == 1 && newCounts[it] == 1 }
+    }
+
     internal fun matches(before: YamlNode, after: YamlNode): Boolean {
-        val id = values[before] ?: return false
-        return id == values[after] && oldCounts[id] == 1 && newCounts[id] == 1
+        val id = uniqueKey(before) ?: return false
+        return id == uniqueKey(after)
     }
 
     private fun counts(field: YamlIdentityField, nodes: List<YamlNode>): Map<YamlMapKey, Int> {
